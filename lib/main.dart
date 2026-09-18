@@ -1,5 +1,5 @@
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:typed_data';
@@ -9,15 +9,15 @@ import 'dart:convert';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Purchases.configure(
-    PurchasesConfiguration('test_OxllDKILQOlnyimetdBcOmBNmyp'),
-  );
+  try {
+    if (!kIsWeb) {
+      await Purchases.configure(
+        PurchasesConfiguration('test_OxllDKILQOlnyimetdBcOmBNmyp'),
+      );
+    }
+  } catch (e) {}
   runApp(const MyApp());
 }
-
-const String apiKey = 'GEMINI_API_KEY';
-const String apiUrl =
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=$apiKey';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -35,6 +35,10 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+const String apiKey = 'GEMINI_API_KEY';
+const String apiUrl =
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=$apiKey';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -130,6 +134,39 @@ ElevatedButton(
   ),
 ),
 
+const SizedBox(height: 16),
+ElevatedButton(
+  onPressed: () async {
+    final customerInfo = await Purchases.getCustomerInfo();
+    final isPro = customerInfo.entitlements.active.containsKey('savage_mode');
+    if (isPro) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DailyRoastScreen(),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const PaywallScreen(),
+        ),
+      );
+    }
+  },
+  style: ElevatedButton.styleFrom(
+    backgroundColor: Colors.green.shade800,
+    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(30),
+    ),
+  ),
+  child: const Text(
+    'Daily Roast 🎯 (Pro)',
+    style: TextStyle(color: Colors.white, fontSize: 18),
+  ),
+),
           ],
         ),
       ),
@@ -408,88 +445,85 @@ class RoastCardScreen extends StatelessWidget {
         title: const Text('Your Roast Card 🔥',
             style: TextStyle(color: Colors.white)),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Screenshot(
-            controller: screenshotController,
-            child: Container(
-              margin: const EdgeInsets.all(20),
-              padding: const EdgeInsets.all(24),
+    body: SingleChildScrollView(
+  child: Column(
+    children: [
+      Container(
+        margin: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF1a0033), Color(0xFF4a0080)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          children: [
+            const Text('🔥', style: TextStyle(fontSize: 50)),
+            const SizedBox(height: 12),
+            const Text(
+              'PERSONALITY ROAST',
+              style: TextStyle(
+                color: Colors.orange,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 3,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              roastText,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF1a0033), Color(0xFF4a0080)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                color: Colors.orange.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.orange),
+              ),
+              child: Text(
+                nickname,
+                style: const TextStyle(
+                  color: Colors.orange,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Column(
-                children: [
-                  const Text('🔥', style: TextStyle(fontSize: 50)),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'PERSONALITY ROAST',
-                    style: TextStyle(
-                      color: Colors.orange,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 3,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    roastText,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.orange),
-                    ),
-                    child: Text(
-                      nickname,
-                      style: const TextStyle(
-                        color: Colors.orange,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'personalityroast.app',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                ],
               ),
             ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton.icon(
-            onPressed: shareCard,
-            icon: const Icon(Icons.share, color: Colors.white),
-            label: const Text('Share Your Roast 🔥',
-                style: TextStyle(color: Colors.white, fontSize: 16)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
+            const SizedBox(height: 20),
+            const Text(
+              'personalityroast.app',
+              style: TextStyle(color: Colors.grey, fontSize: 12),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+      const SizedBox(height: 20),
+      ElevatedButton.icon(
+        onPressed: shareCard,
+        icon: const Icon(Icons.share, color: Colors.white),
+        label: const Text('Share Your Roast 🔥',
+            style: TextStyle(color: Colors.white, fontSize: 16)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.deepPurple,
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30)),
+        ),
+      ),
+      const SizedBox(height: 20),
+    ],
+  ),
+),
     );
   }
 }
@@ -627,6 +661,130 @@ class FeatureRow extends StatelessWidget {
         children: [
           Text(text, style: const TextStyle(color: Colors.white, fontSize: 16)),
         ],
+      ),
+    );
+  }
+}
+
+class DailyRoastScreen extends StatefulWidget {
+  const DailyRoastScreen({super.key});
+
+  @override
+  State<DailyRoastScreen> createState() => _DailyRoastScreenState();
+}
+
+class _DailyRoastScreenState extends State<DailyRoastScreen> {
+  String roast = '';
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    generateDailyRoast();
+  }
+
+  Future<void> generateDailyRoast() async {
+    final today = DateTime.now();
+    final dayOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][today.weekday - 1];
+
+    final body = jsonEncode({
+      'contents': [{
+        'role': 'user',
+        'parts': [{'text': 'Generate a savage, funny daily roast for someone on a $dayOfWeek. Make it about typical $dayOfWeek behavior and mood. Keep it under 4 sentences. End with a funny nickname.'}]
+      }],
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+      final data = jsonDecode(response.body);
+      final reply = data['candidates'][0]['content']['parts'][0]['text'];
+      setState(() {
+        roast = reply;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        roast = 'Even the AI is tired today. Come back tomorrow! 😴';
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text('Daily Roast 🎯',
+            style: TextStyle(color: Colors.white)),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('🎯', style: TextStyle(fontSize: 60)),
+              const SizedBox(height: 20),
+              const Text(
+                'Your Daily Roast',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Come back every day for a fresh roast 🔥',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+              ),
+              const SizedBox(height: 30),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade900.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.green.shade800),
+                ),
+                child: isLoading
+                    ? const CircularProgressIndicator(color: Colors.green)
+                    : Text(
+                        roast,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          height: 1.5,
+                        ),
+                      ),
+              ),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () => generateDailyRoast(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade800,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 40, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text(
+                  'Roast Me Again 🎯',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

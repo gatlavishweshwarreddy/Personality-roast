@@ -1,4 +1,4 @@
-package com.example.personality_roast
+package com.viswa.personalityroast
 
 import io.flutter.embedding.android.FlutterActivity
 
