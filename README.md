@@ -1,17 +1,27 @@
-# personality_roast
+# Personality Roast 🔥
 
-A new Flutter project.
+An AI-powered roast chatbot that delivers brutally honest, hilariously savage roasts about your personality, problems, and life choices.
 
-## Getting Started
+Built for RevenueCat Shipaton 2026.
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- 🔥 **Roast My Personality** - Answer questions, get destroyed (Free)
+- 😤 **Roast My Problems** - Vent frustrations, get roasted (Free)
+- 💀 **Savage Mode** - Zero mercy, zero filter (Pro - $0.99/month)
+- 🎯 **Daily Roast** - Fresh personalized roast every day (Pro - $0.99/month)
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Built With
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Flutter
+- Google Gemini AI
+- RevenueCat
+- Apple In-App Purchase
+
+## Demo
+
+https://youtu.be/759Px-GwItA
+
+## Download
+
+Coming soon on iOS App Store and Google Play Store.
