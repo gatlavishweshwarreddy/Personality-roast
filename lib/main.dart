@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:typed_data';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -11,8 +12,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     if (!kIsWeb) {
+      final apiKey = Platform.isIOS
+          ? 'appl_tufwCreRyLvfDKktTZlgbsVhMLp'
+          : 'test_OxllDKILQOlnyimetdBcOmBNmyp';
       await Purchases.configure(
-        PurchasesConfiguration('test_OxllDKILQOlnyimetdBcOmBNmyp'),
+        PurchasesConfiguration(apiKey),
       );
     }
   } catch (e) {}
@@ -36,9 +40,9 @@ class MyApp extends StatelessWidget {
   }
 }
 
-const String apiKey = 'GEMINI_API_KEY';
+const String apiKey = 'AQ.Ab8RN6KOl5oi6esa2o34V9vthghY7Go3Sf4TCYAESnKCxj68lw';
 const String apiUrl =
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=$apiKey';
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -247,9 +251,14 @@ You are a funny, savage but supportive AI therapist. When the user vents about t
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+  'Content-Type': 'application/json',
+  'x-goog-api-key': apiKey,
+},
         body: body,
       );
+      print('STATUS: ${response.statusCode}');
+      print('BODY: ${response.body}');
 
       final data = jsonDecode(response.body);
       final reply = data['candidates'][0]['content']['parts'][0]['text'];
@@ -448,8 +457,10 @@ class RoastCardScreen extends StatelessWidget {
     body: SingleChildScrollView(
   child: Column(
     children: [
-      Container(
-        margin: const EdgeInsets.all(20),
+      Screenshot(
+        controller: screenshotController,
+        child: Container(
+          margin: const EdgeInsets.all(20),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
@@ -506,6 +517,7 @@ class RoastCardScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
       const SizedBox(height: 20),
       ElevatedButton.icon(
@@ -697,9 +709,14 @@ class _DailyRoastScreenState extends State<DailyRoastScreen> {
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+  'Content-Type': 'application/json',
+  'x-goog-api-key': apiKey,
+},
         body: body,
       );
+      print('STATUS: ${response.statusCode}');
+      print('BODY: ${response.body}');
       final data = jsonDecode(response.body);
       final reply = data['candidates'][0]['content']['parts'][0]['text'];
       setState(() {
