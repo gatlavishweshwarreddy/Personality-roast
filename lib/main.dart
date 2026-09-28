@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-const String apiKey = 'AQ.Ab8RN6KOl5oi6esa2o34V9vthghY7Go3Sf4TCYAESnKCxj68lw';
+const String apiKey = 'YOUR_API_KEY_HERE';
 const String apiUrl =
     'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent';
 
